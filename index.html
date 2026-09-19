@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>املاک نگین | مبارکه</title>
+  <meta name="description" content="املاک نگین - خرید، فروش و اجاره ملک در مبارکه با عکس و ویدیو" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0B3D2E" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>" />
+</head>
+<body>
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo" onclick="go('home')">
+        <span class="logo-mark">ن</span>
+        <div class="logo-text">
+          <strong>املاک نگین</strong>
+          <small>مبارکه</small>
+        </div>
+      </div>
+      <nav class="nav-desktop">
+        <a href="#" data-page="home" class="nav-link active">خانه</a>
+        <a href="#" data-page="search" class="nav-link">جستجو</a>
+        <a href="#" data-page="add" class="nav-link">ثبت آگهی</a>
+        <a href="#" data-page="saved" class="nav-link">موردعلاقه</a>
+        <a href="#" data-page="about" class="nav-link">درباره ما</a>
+        <a href="#" data-page="account" class="nav-link">حساب</a>
+      </nav>
+      <button class="btn-header" id="btnHeaderUser" onclick="go('account')">ورود مدیر</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- HOME -->
+    <section id="page-home" class="page active">
+      <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="container hero-content">
+          <span class="hero-badge">آژانس املاک نگین · مبارکه</span>
+          <h1>خانه‌ای که می‌خواهی<br /><em>همین‌جا پیدا کن</em></h1>
+          <p>خرید، فروش و اجاره ملک با عکس و ویدیو واقعی</p>
+          <div class="hero-search" onclick="go('search')">
+            <span>🔍</span>
+            <input aria-label="جستجوی ملک" onclick="event.stopPropagation();go('search')" placeholder="جستجوی شهر، محله، نوع ملک..." />
+            <span class="hero-search-arrow">←</span>
+          </div>
+          <div class="hero-stats">
+            <div><strong id="stat-count">۰</strong><span>آگهی فعال</span></div>
+            <div><strong>مبارکه</strong><span>منطقه فعالیت</span></div>
+            <div><strong>۲۴/۷</strong><span>پاسخگویی</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container quick-stats">
+        <div class="quick-stat"><span>🏠</span><div><strong id="qs-sale">۰</strong><small>فروش</small></div></div>
+        <div class="quick-stat"><span>🔑</span><div><strong id="qs-rent">۰</strong><small>اجاره</small></div></div>
+        <div class="quick-stat"><span>⭐</span><div><strong id="qs-featured">۰</strong><small>ویژه</small></div></div>
+      </div>
+
+      <div class="container section">
+        <h2 class="section-title">دسته‌بندی‌ها</h2>
+        <div class="cats">
+          <button class="cat" data-cat="خانه" onclick="quickCat('خانه')">🏡<span>خانه</span></button>
+          <button class="cat" data-cat="ویلا" onclick="quickCat('ویلا')">🏖️<span>ویلا</span></button>
+          <button class="cat" data-cat="آپارتمان" onclick="quickCat('آپارتمان')">🏢<span>آپارتمان</span></button>
+          <button class="cat" data-cat="زمین" onclick="quickCat('زمین')">🌳<span>زمین</span></button>
+          <button class="cat" data-cat="مغازه" onclick="quickCat('مغازه')">🏪<span>مغازه</span></button>
+          <button class="cat" data-cat="اجاره" onclick="quickCat('اجاره')">🔑<span>اجاره</span></button>
+        </div>
+      </div>
+
+      <div class="container section">
+        <div class="section-head">
+          <h2 class="section-title">آگهی‌های ویژه</h2>
+          <a href="#" onclick="go('search');return false" class="link-more">مشاهده همه ←</a>
+        </div>
+        <div id="featured-grid" class="grid"></div>
+        <div id="home-loading" class="loading-box"><div class="spinner"></div><p>در حال بارگذاری...</p></div>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <section id="page-search" class="page">
+      <div class="container">
+        <h2 class="page-title">جستجوی پیشرفته</h2>
+        <div class="search-panel">
+          <input type="text" id="q" placeholder="عنوان، محله یا توضیحات..." oninput="doSearch()" />
+          <div class="filter-row">
+            <select id="f-type" onchange="doSearch()">
+              <option value="">نوع معامله</option><option value="خرید">خرید</option><option value="اجاره">اجاره</option>
+            </select>
+            <select id="f-cat" onchange="doSearch()">
+              <option value="">دسته‌بندی</option><option value="خانه">خانه</option><option value="ویلا">ویلا</option>
+              <option value="آپارتمان">آپارتمان</option><option value="زمین">زمین</option><option value="مغازه">مغازه</option>
+            </select>
+            <select id="f-rooms" onchange="doSearch()">
+              <option value="">تعداد خواب</option><option value="1">۱ خواب</option><option value="2">۲ خواب</option>
+              <option value="3">۳ خواب</option><option value="4">۴+ خواب</option>
+            </select>
+            <input id="f-minarea" type="number" min="0" inputmode="numeric" placeholder="حداقل متراژ" oninput="doSearch()" />
+            <input id="f-maxarea" type="number" min="0" inputmode="numeric" placeholder="حداکثر متراژ" oninput="doSearch()" />
+            <select id="f-sort" onchange="doSearch()">
+              <option value="new">جدیدترین</option><option value="area">بیشترین متراژ</option><option value="rooms">بیشترین خواب</option>
+            </select>
+          </div>
+        </div>
+        <p id="search-meta" class="meta-text">۰ نتیجه</p>
+        <div id="search-grid" class="grid"></div>
+      </div>
+    </section>
+
+    <!-- DETAIL -->
+    <section id="page-detail" class="page">
+      <div class="container">
+        <button class="btn-back" onclick="go(lastPage)">← بازگشت</button>
+        <div id="detail-root"></div>
+      </div>
+    </section>
+
+    <!-- ADD -->
+    <section id="page-add" class="page">
+      <div class="container narrow">
+        <button class="btn-back" onclick="go('home')">← بازگشت</button>
+        <h2 class="page-title">ثبت آگهی جدید</h2>
+        <p class="hint">آگهی پس از تایید مدیر نمایش داده می‌شود. می‌توانید چند عکس و لینک ویدیو اضافه کنید.</p>
+        <form id="form-add" class="form-card" onsubmit="submitAdd(event)">
+          <div class="form-section">
+            <h3>اطلاعات اصلی</h3>
+            <div class="field">
+              <label>عنوان آگهی *</label>
+              <input id="a-title" required placeholder="مثال: ویلا ۳۰۰ متری باغ بهاران" />
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label>نوع معامله *</label>
+                <select id="a-type" required>
+                  <option value="خرید">خرید</option>
+                  <option value="اجاره">اجاره</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>دسته‌بندی *</label>
+                <select id="a-cat" required>
+                  <option value="خانه">خانه</option>
+                  <option value="ویلا">ویلا</option>
+                  <option value="آپارتمان">آپارتمان</option>
+                  <option value="زمین">زمین</option>
+                  <option value="مغازه">مغازه</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>قیمت *</label>
+              <input id="a-price" required placeholder="مثال: ۲,۸۰۰,۰۰۰,۰۰۰ تومان" />
+            </div>
+            <div class="field">
+              <label>موقعیت (شهر و محله) *</label>
+              <input id="a-location" required placeholder="مبارکه، شهرک اندیشه" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>مشخصات ملک</h3>
+            <div class="row3">
+              <div class="field"><label>متراژ</label><input id="a-area" placeholder="۱۲۵ متر" /></div>
+              <div class="field"><label>خواب</label><input id="a-rooms" placeholder="۳" /></div>
+              <div class="field"><label>سرویس</label><input id="a-bath" placeholder="۲" /></div>
+            </div>
+            <div class="row3">
+              <div class="field"><label>پارکینگ</label><input id="a-park" placeholder="۱" /></div>
+              <div class="field"><label>طبقه</label><input id="a-floor" placeholder="۲" /></div>
+              <div class="field"><label>سال ساخت</label><input id="a-year" placeholder="۱۴۰۲" /></div>
+            </div>
+            <div class="field">
+              <label>توضیحات</label>
+              <textarea id="a-desc" rows="4" placeholder="توضیحات کامل ملک، امکانات، وضعیت سند..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>عکس‌ها و ویدیو</h3>
+            <div class="field">
+              <label>آپلود عکس (چندتایی)</label>
+              <div class="upload-zone" id="upload-zone">
+                <input type="file" id="a-images" accept="image/*" multiple onchange="handleImages(event)" />
+                <div class="upload-placeholder">
+                  <span class="up-icon">📷</span>
+                  <p>کلیک کنید یا عکس‌ها را بکشید اینجا</p>
+                  <small>حداکثر ۶ عکس · هر عکس حداکثر حدود ۸۰۰ کیلوبایت</small>
+                </div>
+              </div>
+              <div id="preview-imgs" class="preview-imgs"></div>
+            </div>
+            <div class="field">
+              <label>لینک ویدیو (اختیاری)</label>
+              <input id="a-video" placeholder="لینک آپارات یا یوتیوب" />
+              <small class="field-hint">مثال: https://www.aparat.com/v/xxxxx</small>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3>اطلاعات تماس (فقط مدیر می‌بیند)</h3>
+            <div class="row2">
+              <div class="field"><label>نام مالک</label><input id="a-owner" placeholder="نام" /></div>
+              <div class="field"><label>شماره موبایل</label><input id="a-phone" type="tel" placeholder="0913..." /></div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-main btn-block" id="btn-add">ارسال برای تایید مدیر</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- SAVED -->
+    <section id="page-saved" class="page">
+      <div class="container">
+        <h2 class="page-title">موردعلاقه‌ها</h2>
+        <div id="saved-grid" class="grid"></div>
+        <div id="saved-empty" class="empty">
+          <div class="empty-icon">🤍</div>
+          <p>هنوز ملکی ذخیره نکرده‌اید</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="page-about" class="page">
+      <div class="container narrow">
+        <h2 class="page-title">درباره املاک نگین</h2>
+        <div class="about-card">
+          <div class="about-icon">🏡</div>
+          <h3>آژانس املاک نگین</h3>
+          <p>واقع در مبارکه، خیابان امام. ارائه خدمات خرید، فروش و اجاره انواع ملک با شفافیت کامل و پشتیبانی حرفه‌ای.</p>
+          <div class="about-info">
+            <div><span>📍</span> مبارکه، خیابان امام</div>
+            <div><span>📞</span> برای بازدید حضوری مراجعه کنید</div>
+            <div><span>⏰</span> همه روزه ۹ صبح تا ۹ شب</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section id="page-account" class="page">
+      <div class="container narrow">
+        <h2 class="page-title">حساب کاربری</h2>
+        <div class="profile-card" id="profile-card">
+          <div class="profile-avatar">👤</div>
+          <div>
+            <div class="profile-name" id="p-name">کاربر املاک نگین</div>
+            <div class="profile-role" id="p-role">کاربر عادی</div>
+          </div>
+        </div>
+        <div id="admin-btns" class="hidden">
+          <button class="btn-main btn-block" onclick="go('admin')">
+            🛡️ پنل مدیریت
+            <span id="pending-count" class="badge hidden">0</span>
+          </button>
+          <button class="btn-ghost btn-block danger" onclick="logout()">خروج از حساب مدیر</button>
+        </div>
+        <div id="user-btns">
+          <button class="btn-outline btn-block" onclick="openLogin()">ورود مدیر</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="page-admin" class="page">
+      <div class="container">
+        <button class="btn-back" onclick="go('account')">← بازگشت</button>
+        <h2 class="page-title">پنل مدیریت</h2>
+        <div class="admin-tabs" id="admin-tabs">
+          <button class="tab active" data-f="all" onclick="setAdminF('all')">همه</button>
+          <button class="tab" data-f="PENDING" onclick="setAdminF('PENDING')">در انتظار</button>
+          <button class="tab" data-f="APPROVED" onclick="setAdminF('APPROVED')">تایید شده</button>
+          <button class="tab" data-f="REJECTED" onclick="setAdminF('REJECTED')">رد شده</button>
+          <button class="tab" data-f="SOLD" onclick="setAdminF('SOLD')">فروخته شده</button>
+        </div>
+        <div class="admin-summary">
+          <div><span>📋</span><strong id="adm-all">۰</strong><small>کل آگهی</small></div>
+          <div><span>⏳</span><strong id="adm-pending">۰</strong><small>در انتظار</small></div>
+          <div><span>✅</span><strong id="adm-approved">۰</strong><small>فعال</small></div>
+          <div><span>🏷️</span><strong id="adm-sold">۰</strong><small>فروخته‌شده</small></div>
+        </div>
+        <div class="admin-tools">
+          <button class="btn-sm outline" onclick="exportData()">⬇️ پشتیبان‌گیری</button>
+          <label class="btn-sm outline file-btn">⬆️ بازیابی
+            <input type="file" accept="application/json" onchange="importData(event)" />
+          </label>
+          <button class="btn-sm outline" onclick="printAdmin()">🖨️ چاپ</button>
+        </div>
+        <p id="admin-meta" class="meta-text">۰ آگهی</p>
+        <div id="admin-list" class="admin-list"></div>
+      </div>
+    </section>
+
+    <!-- EDIT -->
+    <section id="page-edit" class="page">
+      <div class="container narrow">
+        <button class="btn-back" onclick="go('admin')">← بازگشت</button>
+        <h2 class="page-title">ویرایش آگهی</h2>
+        <form id="form-edit" class="form-card" onsubmit="submitEdit(event)">
+          <input type="hidden" id="e-id" />
+          <div class="form-section">
+            <h3>وضعیت و ویژه</h3>
+            <div class="field">
+              <label>وضعیت</label>
+              <select id="e-status">
+                <option value="PENDING">در انتظار</option>
+                <option value="APPROVED">تایید شده</option>
+                <option value="REJECTED">رد شده</option>
+                <option value="SOLD">فروخته شده</option>
+              </select>
+            </div>
+            <label class="check-label"><input type="checkbox" id="e-featured" /> آگهی ویژه (صفحه اصلی)</label>
+          </div>
+          <div class="form-section">
+            <h3>اطلاعات اصلی</h3>
+            <div class="field"><label>عنوان</label><input id="e-title" required /></div>
+            <div class="row2">
+              <div class="field"><label>نوع معامله</label>
+                <select id="e-type"><option value="خرید">خرید</option><option value="اجاره">اجاره</option></select>
+              </div>
+              <div class="field"><label>دسته‌بندی</label>
+                <select id="e-cat">
+                  <option value="خانه">خانه</option><option value="ویلا">ویلا</option>
+                  <option value="آپارتمان">آپارتمان</option><option value="زمین">زمین</option>
+                  <option value="مغازه">مغازه</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label>قیمت</label><input id="e-price" required /></div>
+            <div class="field"><label>موقعیت</label><input id="e-location" /></div>
+          </div>
+          <div class="form-section">
+            <h3>مشخصات</h3>
+            <div class="row3">
+              <div class="field"><label>متراژ</label><input id="e-area" /></div>
+              <div class="field"><label>خواب</label><input id="e-rooms" /></div>
+              <div class="field"><label>سرویس</label><input id="e-bath" /></div>
+            </div>
+            <div class="row3">
+              <div class="field"><label>پارکینگ</label><input id="e-park" /></div>
+              <div class="field"><label>طبقه</label><input id="e-floor" /></div>
+              <div class="field"><label>سال ساخت</label><input id="e-year" /></div>
+            </div>
+            <div class="field"><label>توضیحات</label><textarea id="e-desc" rows="4"></textarea></div>
+          </div>
+          <div class="form-section">
+            <h3>عکس‌ها و ویدیو</h3>
+            <div class="field">
+              <label>افزودن عکس جدید</label>
+              <input type="file" id="e-images" accept="image/*" multiple onchange="handleEditImages(event)" />
+              <div id="e-preview" class="preview-imgs"></div>
+            </div>
+            <div class="field"><label>لینک ویدیو</label><input id="e-video" placeholder="لینک آپارات / یوتیوب" /></div>
+          </div>
+          <div class="form-section">
+            <h3>تماس</h3>
+            <div class="row2">
+              <div class="field"><label>نام مالک</label><input id="e-owner" /></div>
+              <div class="field"><label>موبایل</label><input id="e-phone" /></div>
+            </div>
+          </div>
+          <button type="submit" class="btn-main btn-block">ذخیره تغییرات</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <a href="#" data-page="home" class="bn active"><span>🏠</span><small>خانه</small></a>
+    <a href="#" data-page="search" class="bn"><span>🔍</span><small>جستجو</small></a>
+    <a href="#" data-page="add" class="bn bn-plus"><span class="fab">+</span></a>
+    <a href="#" data-page="saved" class="bn"><span>❤️</span><small>علاقه</small></a>
+    <a href="#" data-page="account" class="bn"><span>👤</span><small>حساب</small></a>
+  </nav>
+
+  <!-- Login Modal -->
+  <div id="modal-login" class="modal hidden">
+    <div class="modal-bg" onclick="closeLogin()"></div>
+    <div class="modal-box">
+      <h3>ورود مدیر</h3>
+      <p class="modal-sub">فقط مدیر سیستم مجاز است</p>
+      <div class="field"><label>نام کاربری</label><input id="login-u" autocomplete="username" /></div>
+      <div class="field"><label>رمز عبور</label><input id="login-p" type="password" autocomplete="current-password" /></div>
+      <p id="login-err" class="err hidden"></p>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeLogin()">انصراف</button>
+        <button class="btn-main" onclick="doLogin()">ورود</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Modal -->
+  <div id="modal-del" class="modal hidden">
+    <div class="modal-bg" onclick="closeDel()"></div>
+    <div class="modal-box">
+      <h3>حذف آگهی</h3>
+      <p>آیا مطمئن هستید؟ این عمل قابل بازگشت نیست.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeDel()">انصراف</button>
+        <button class="btn-main danger" onclick="confirmDel()">حذف</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="modal-ok" class="modal hidden">
+    <div class="modal-bg" onclick="closeOk()"></div>
+    <div class="modal-box center">
+      <div class="ok-icon">✓</div>
+      <h3>آگهی ارسال شد</h3>
+      <p>پس از تایید مدیر در سایت نمایش داده می‌شود.</p>
+      <button class="btn-main" onclick="closeOk()">باشه</button>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox hidden" onclick="closeLightbox()">
+    <button class="lb-close" onclick="closeLightbox()">×</button>
+    <img id="lb-img" src="" alt="" />
+    <button class="lb-nav lb-prev" onclick="event.stopPropagation();lbNav(-1)">›</button>
+    <button class="lb-nav lb-next" onclick="event.stopPropagation();lbNav(1)">‹</button>
+  </div>
+
+  <script src="app.js"></script>
+  <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}</script>
+</body>
+</html>
